@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import axios from "axios"
+import { Dropdown } from 'semantic-ui-react'
+import _ from "lodash"
+
+
 
 // product Item Layout
 class ProductsItem extends Component {
@@ -39,7 +43,8 @@ class Products extends Component {
 
         // Initialise the default states
         this.state = {
-            products:[]
+            products:[],
+            sort:""
         }
     }
 
@@ -65,19 +70,68 @@ class Products extends Component {
 
     }
 
-    render() {
+    // update state when the input field changes
+    handleChange = (e, { name, value }) => {
+        this.setState({ [name]: value })
+        this.handleSort()
+    }
+
+    // handle the sort
+    handleSort =  () => {
+        const { products, sort } = this.state
+        const newList = _.orderBy(products, [sort])
+
+        console.log(newList)
+    
         
+    
+        this.setState({
+          products: newList,
+          
+        })
+      }
+
+
+    render() {
+
+        // drop down options
+        const dropDownOptions = [
+            {
+                text:"Price",
+                value:"price"
+            },
+            {
+                text:"Size",
+                value:"size"
+            },
+            {
+                text:"Id",
+                value:"id"
+            }
+            
+            
+        ]
+        // sort products
+        const { products, sort } = this.state
+        const newList = _.orderBy(products, [sort])
+
         // set up the products List with the product item layout
-        const productsList = this.state.products.map((m,i)=>{
+        const productsList = newList.map((m,i)=>{
 
             return (
                 <ProductsItem key={i} ascii={m} />
             )
         })
         return (
-            <div style={styles.productsListStyle}>
-                {productsList}
+            <div > 
+                <div>
+                    <Dropdown name="sort" placeholder="Sort by" inline selection options={dropDownOptions} onChange={this.handleChange}  />
+                </div>
+                <div style={styles.productsListStyle}>
+                    {productsList}
+                </div>
             </div>
+            
             );
     }
 }
