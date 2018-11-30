@@ -22,13 +22,34 @@ class ProductsItem extends Component {
         const price = this.props.ascii.price
         const formattedPrice = "$"+price.toString().slice(0,1)[0] +"." +price.toString().slice(1)
 
+        // format date
+        let formattedDate = ""
+        const today = new Date().getDay()
+        const date = new Date(this.props.ascii.date)
+        const postdate = date.getDay()
+        
+
+        if(today - postdate ===0){
+            // today
+            formattedDate= "Today"
+        }else if(today - postdate <0){
+            const dateSPlit = date.toString().split(" ")
+            formattedDate = dateSPlit[0]+" " + dateSPlit[1]+" " + dateSPlit[2]+" " + dateSPlit[3]
+        }else if(today - postdate ===1){
+            const dateSPlit = date.toString().split(" ")
+            formattedDate = today - postdate +" day ago"
+        }
+        else{
+            formattedDate = today - postdate +" days ago"
+        }
+
         return (
             <div style={styles.product}>
                 <div style={styles.card}>
                     <h1 style={{fontSize:this.props.ascii.size}}>{this.props.ascii.face}</h1>
                 </div>
                 <span style={styles.price}>{formattedPrice}</span>
-                <span style={styles.date}>{"3 days ago"}</span>
+                <span style={styles.date}>{ formattedDate }</span>
 
             </div>
             
