@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from "axios"
-import { Dropdown } from 'semantic-ui-react'
+import { Dropdown, Loader, Segment } from 'semantic-ui-react'
 import _ from "lodash"
 
 
@@ -11,7 +11,11 @@ class ProductsItem extends Component {
     constructor(props){
         super(props)
 
+        
+
+
     }
+    
 
     render() {
         // format the price to this format ($1.23)
@@ -44,17 +48,62 @@ class Products extends Component {
         // Initialise the default states
         this.state = {
             products:[],
-            sort:""
+            sort:"",
+            page:1,
+            productsCompleted:false,
+            loading:false
+
         }
+
+
+        
+        // CHeck if the bottom is reached,
+        window.onscroll = (e) =>{
+
+                // get window Height
+                const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+                const body = document.body;
+                const html = document.documentElement;
+
+                // calculate the documents height value
+                const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
+                // calculate the bottom height value
+                const windowBottom = windowHeight + window.pageYOffset;
+
+                //check if bottom is reached
+                if (windowBottom >= docHeight) {
+                    
+
+                    // Only load if the catalog didn't end and  there is no ongoing loading of products
+                    if(!this.state.productsCompleted && !this.state.loading ){
+                        this.getProducts(this.state.page++)
+                        this.setState({page:this.state.page++})
+                    }
+                   
+                }
+        }
+
     }
 
     // get the products list from the server function
-    getProducts(){
-        axios.get("http://localhost:3000/products")
+    getProducts(page){
+
+        this.setState({loading:true})
+        axios.get(`http://localhost:3000/products?_page=${page}&_limit=50`)
             .then((res)=>{
 
             // update the state with the products
-            this.setState({products:res.data})
+            let currentList = this.state.products
+            
+            // add the new products to the current one if it has products, if not mark the end of the catalog
+
+            if(res.data.length>0){
+                this.setState({products:[...currentList,...res.data],loading:false})
+
+            }else{
+                this.setState({productsCompleted:true,loading:false})
+
+            }
      
         })
         .catch((err)=>{
@@ -66,7 +115,7 @@ class Products extends Component {
     componentDidMount(){
 
         // fetch the products from teh server whet the component mounts
-        this.getProducts()
+        this.getProducts(this.state.page)
 
     }
 
@@ -122,14 +171,31 @@ class Products extends Component {
                 <ProductsItem key={i} ascii={m} />
             )
         })
+
+
+        // loading spinner
+        const loading = (
+            <Loader inline active style={{marginTop:20}}>Loading...</Loader>
+        )
+        
+        // end of the catalog text
+        const end = (
+            <h1 style={{marginBottom:30}}>~ end of catalogue ~</h1>
+        )
         return (
             <div > 
                 <div>
                     <Dropdown name="sort" placeholder="Sort by" inline selection options={dropDownOptions} onChange={this.handleChange}  />
                 </div>
-                <div style={styles.productsListStyle}>
+                <div className="list" style={styles.productsListStyle}>
                     {productsList}
                 </div>
+
+                {this.state.loading ? loading : null}
+
+                {this.state.productsCompleted ? end : null }
+
+
             </div>
             
             );
@@ -147,7 +213,7 @@ const styles = {
     },
     card:{
         width:220,
-        height:100,
+        height:150,
         margin:10,
         borderColor:"#D4D4D5",
         borderWidth:1,
