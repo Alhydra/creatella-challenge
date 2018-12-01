@@ -16,32 +16,42 @@ class ProductsItem extends Component {
 
     }
     
+    relativeDate(date){
+        // formated date 
+        let formattedDate=""
+        // today date
+        const today = new Date("Fri Nov 30 2018")
 
+        if(today.getFullYear() === date.getFullYear() && today.getMonth() === date.getMonth() && today.getDay() === date.getDay()){
+            // today
+            formattedDate= "Today"
+        }else if(today.getFullYear() === date.getFullYear() && today.getMonth() === date.getMonth() && today.getDay() - date.getDay() ===1){
+            // one day ago
+            formattedDate = "One day ago"
+        }else if(today.getFullYear() === date.getFullYear() && today.getMonth() === date.getMonth() && today.getDay() - date.getDay() >0){
+            // This week
+            formattedDate = today.getDay() - date.getDay() + 1 +" Days ago"
+
+            
+        }else{
+            // dates older than last week
+            const dateSPlit = date.toString().split(" ")
+            formattedDate = dateSPlit[0]+" " + dateSPlit[1]+" " + dateSPlit[2]+" " + dateSPlit[3]
+
+        }
+
+        return formattedDate
+
+    }
     render() {
         // format the price to this format ($1.23)
         const price = this.props.ascii.price
         const formattedPrice = "$"+price.toString().slice(0,1)[0] +"." +price.toString().slice(1)
 
         // format date
-        let formattedDate = ""
-        const today = new Date().getDay()
-        const date = new Date(this.props.ascii.date)
-        const postdate = date.getDay()
+        let formattedDate = this.relativeDate(new Date(this.props.ascii.date))
         
-
-        if(today - postdate ===0){
-            // today
-            formattedDate= "Today"
-        }else if(today - postdate <0){
-            const dateSPlit = date.toString().split(" ")
-            formattedDate = dateSPlit[0]+" " + dateSPlit[1]+" " + dateSPlit[2]+" " + dateSPlit[3]
-        }else if(today - postdate ===1){
-            const dateSPlit = date.toString().split(" ")
-            formattedDate = today - postdate +" day ago"
-        }
-        else{
-            formattedDate = today - postdate +" days ago"
-        }
+        
 
         return (
             <div style={styles.product}>
