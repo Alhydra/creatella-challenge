@@ -46,7 +46,14 @@ class ProductsItem extends Component {
     render() {
         // format the price to this format ($1.23)
         const price = this.props.ascii.price
-        const formattedPrice = "$"+price.toString().slice(0,1)[0] +"." +price.toString().slice(1)
+
+        let formattedPrice = ""
+
+        if(price.toString().length === 1){
+            formattedPrice = "$"+price
+        }else{
+            formattedPrice = "$"+price.toString().slice(0,1)[0] +"." +price.toString().slice(1)
+        }
 
         // format date
         let formattedDate = this.relativeDate(new Date(this.props.ascii.date))
@@ -243,8 +250,8 @@ const styles = {
 
     },
     card:{
-        width:220,
-        height:150,
+        width:250,
+        height:180,
         margin:10,
         borderColor:"#D4D4D5",
         borderWidth:1,
@@ -256,12 +263,12 @@ const styles = {
     },
     price:{
         fontWeight:"bold",
-        fontSize:14,
+        fontSize:16,
         color:"crimson"
     },
     date:{
         fontWeight:300,
-        fontSize:10,
+        fontSize:12,
         color:"#C2C2C2"
     },
     product:{
