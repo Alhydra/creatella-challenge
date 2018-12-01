@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from "axios"
-import { Dropdown, Loader, Segment } from 'semantic-ui-react'
+import { Dropdown, Loader } from 'semantic-ui-react'
 import _ from "lodash"
 
 
@@ -8,14 +8,6 @@ import _ from "lodash"
 // product Item Layout
 class ProductsItem extends Component {
 
-    constructor(props){
-        super(props)
-
-        
-
-
-    }
-    
     relativeDate(date){
         // formated date 
         let formattedDate=""
@@ -200,15 +192,29 @@ class Products extends Component {
         ]
         // sort products
         const { products, sort } = this.state
-        const newList = _.orderBy(products, [sort])
+        let newList = _.orderBy(products, [sort])
 
         // set up the products List with the product item layout
         const productsList = newList.map((m,i)=>{
+            // display ad every 20 product
+            if(Number.isInteger(i / 20) && i/20 > 0){
 
+
+                products.push(m)
+                return (
+                    <div key={i} style={{display:"flex",flexDirection:"row"}}>
+                        <img  style={styles.ad} src={`https://unsplash.it/320/200?image=${Math.floor(Math.random()*1000)}`}/>
+                    </div>
+                    
+                )
+            }
             return (
                 <ProductsItem key={i} ascii={m} />
             )
         })
+
+          // sort products with ads
+          newList = _.orderBy(newList, [sort])
 
 
         // loading spinner
@@ -275,6 +281,11 @@ const styles = {
         marginBottom:20,
         display:"flex",
         flexDirection:"column"
+    },
+    ad:{
+        margin:10,
+        width:250,
+        height:228,
     }
 }
 
