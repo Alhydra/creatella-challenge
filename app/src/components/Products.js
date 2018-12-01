@@ -119,7 +119,7 @@ class Products extends Component {
     getProducts(page){
 
         this.setState({loading:true})
-        axios.get(`http://localhost:3000/products?_page=${page}&_limit=50`)
+        axios.get(`http://localhost:3000/api/products?_page=${page}&_limit=50`)
             .then((res)=>{
 
             // update the state with the products
